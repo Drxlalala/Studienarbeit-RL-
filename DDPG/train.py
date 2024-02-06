@@ -45,33 +45,33 @@ class DDPGModel(ModelBase):
         self.update_freq = args.update_freq
 
     def train(self):
-        """ 训练 """
-        print("开始训练！")
+        """ train """
+        print("start training！")
 
         total_steps = 0
         evaluate_num = 0
         sample_count = 0
-        evaluate_rewards = []  # 记录每回合的奖励
+        evaluate_rewards = []  
 
         # Tensorboard config
         log_dir = os.path.join(log_path, f'./runs/{self.model_name}')
         writer = SummaryWriter(log_dir=log_dir)
 
         while total_steps < self.args.max_train_steps:
-            s, _ = self.env.reset(seed=self.args.seed)  # 重置环境，返回初始状态
+            s, _ = self.env.reset(seed=self.args.seed)  
             ep_step = 0
             while True:
                 ep_step += 1
                 sample_count += 1
-                a = self.agent.sample_action(s)  # 选择动作
-                s_, r, terminated, truncated, _ = self.env.step(a)  # 更新环境，返回transition
+                a = self.agent.sample_action(s) 
+                s_, r, terminated, truncated, _ = self.env.step(a)  
 
                 if ep_step == self.args.max_episode_steps:
                     truncated = True
 
                 # 保存transition
                 self.agent.memory.push((s, a, s_, r, terminated, truncated))
-                s = s_  # 更新下一个状态
+                s = s_  
                 total_steps += 1
 
                 # Take 50 steps,then update the networks 50 times
@@ -95,13 +95,13 @@ class DDPGModel(ModelBase):
                 if terminated or truncated:
                     break
 
-        print("完成训练！")
+        print("the train is finish！")
         self.env.close()
 
 
 def make_env(args):
-    """ 配置环境 """
-    env = gym.make(args.env_name)  # 创建环境
+    """ set the Env """
+    env = gym.make(args.env_name)  
     state_dim = env.observation_space.shape[0]
     action_dim = env.action_space.shape[0]
     max_action = float(env.action_space.high[0])
