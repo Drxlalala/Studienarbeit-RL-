@@ -103,9 +103,9 @@ Train = 1
 class Train_Type:
 
    def sac_train():
-      loaded_model = SAC.load('underwater_save/SAC.curriculum_Underwater',tensorboard_log=log_dir)
+      loaded_model = SAC.load('save/SAC.model_curriculum',tensorboard_log=log_dir)
 
-      loaded_model.load_replay_buffer('save/SAC.ReplayBuffer')
+      loaded_model.load_replay_buffer('save/SAC.ReplayBuffer_curriculum')
 
       loaded_model.set_env(DummyVecEnv([lambda: gym.make('underwater_env') for _ in range(8)]))
 
@@ -137,7 +137,7 @@ class Train_Type:
 
    def ddpg_train():
 
-      loaded_model = DDPG.load('save/DDPG.curriculum_Underwater',tensorboard_log=log_dir)
+      loaded_model = DDPG.load('save/DDPG.model_curriculum',tensorboard_log=log_dir)
 
       loaded_model.load_replay_buffer('save/DDPG.ReplayBuffer_curriculum')
 
