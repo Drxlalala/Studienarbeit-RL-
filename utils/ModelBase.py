@@ -7,8 +7,8 @@ from torch.utils.tensorboard import SummaryWriter
 from utils.normalization import Normalization
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-print('CUDA version:', torch.version.cuda)  # 打印CUDA版本
-print('CUDA available:', torch.cuda.is_available())  # 检查CUDA是否可用
+print('CUDA version:', torch.version.cuda)  
+print('CUDA available:', torch.cuda.is_available())  
 
 local_path = os.path.dirname(__file__)
 log_path = os.path.join(local_path, 'log')
@@ -48,7 +48,7 @@ class ModelBase(object):
         return evaluate_reward / times
 
     def set_seed(self, seed=10):
-        """ 配置seed """
+        """ set seed """
         if seed == 0:
             return
         self.env.action_space.seed(seed)
@@ -59,33 +59,33 @@ class ModelBase(object):
         os.environ['PYTHONHASHSEED'] = str(seed)  # config for python scripts
 
     def train(self):
-        """ 训练 """
-        print("开始训练！")
+        """ start the training """
+        print("start the training！")
 
         total_steps = 0
         evaluate_num = 0
         sample_count = 0
-        evaluate_rewards = []  # 记录每回合的奖励
+        evaluate_rewards = []  
 
         # Tensorboard config
         log_dir = os.path.join(log_path, f'./runs/{self.model_name}')
         writer = SummaryWriter(log_dir=log_dir)
 
         while total_steps < self.args.max_train_steps:
-            s, _ = self.env.reset(seed=self.args.seed)  # 重置环境，返回初始状态
+            s, _ = self.env.reset(seed=self.args.seed)  
             ep_step = 0
             while True:
                 ep_step += 1
                 sample_count += 1
-                a, a_logprob = self.agent.sample_action(s)  # 选择动作
-                s_, r, terminated, truncated, _ = self.env.step(a)  # 更新环境，返回transition
+                a, a_logprob = self.agent.sample_action(s) 
+                s_, r, terminated, truncated, _ = self.env.step(a)  
 
                 if ep_step == self.args.max_episode_steps:
                     truncated = True
 
-                # 保存transition
+              
                 self.agent.memory.push((s, a, a_logprob, s_, r, terminated, truncated))
-                s = s_  # 更新下一个状态
+                s = s_  
                 total_steps += 1
 
                 # update policy every n steps
@@ -106,5 +106,5 @@ class ModelBase(object):
                 if terminated or truncated:
                     break
 
-        print("完成训练！")
+        print("the training is finish！")
         self.env.close()
