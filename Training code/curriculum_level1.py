@@ -15,7 +15,7 @@ import mujoco.viewer
 import numpy as np
 import torch as th
 import os
-import Interation
+
 
 
 class NormalEnv(gym.Wrapper):
@@ -137,7 +137,7 @@ class Train_Type:
 
 
 
-normal_env = NoramlEnv('FetchReach', render_mode="human", max_episode_steps=100)
+normal_env = NormalEnv('FetchReach', render_mode="human", max_episode_steps=100)
 env_id = 'FetchReach'
 log_dir = './fetch_curriculum/'
 eval_callback = EvalCallback(normal_env, log_path=log_dir, eval_freq=500)
