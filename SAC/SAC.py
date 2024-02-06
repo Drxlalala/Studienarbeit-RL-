@@ -21,7 +21,6 @@ class Actor(nn.Module):
     def forward(self, s, deterministic=False):
         s = F.relu(self.fc1(s))
         s = F.relu(self.fc2(s))
-        # 将网络输出的 action 规范在 (-max_action， max_action) 之间
         mean = self.fc3(s)
         log_std = self.log_std.expand_as(mean)  # To make 'log_std' have the same dimension as 'mean'
         std = torch.exp(log_std)  # The reason we train the 'log_std' is to ensure std=exp(log_std)>0
