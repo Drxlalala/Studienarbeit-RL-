@@ -15,7 +15,7 @@ import mujoco.viewer
 import numpy as np
 import torch as th
 import os
-import Interation
+
 
 
 class NormalEnv(gym.Wrapper):
@@ -133,7 +133,7 @@ class Train_Type:
 
 
 
-normal_env = NoramlEnv('FetchPickAndPlaceDesen-v2', render_mode="human", max_episode_steps=100)
+normal_env = NormalEnv('FetchPickAndPlaceDesen-v2', render_mode="human", max_episode_steps=100)
 env_id = 'FetchPickAndPlaceDesen-v2'
 
 
