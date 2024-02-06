@@ -6,39 +6,39 @@ from copy import deepcopy as dc
 
 
 class ReplayBuffer:
-    """ 经验回放池, 用于存储transition, 然后随机采样transition用于训练 """
+  
 
     def __init__(self, capacity: int) -> None:
-        """ 初始化经验回放池
+       
 
-            :param capacity: (int) 经验回放池的容量
+            :param capacity: (int) 
         """
         self.capacity = capacity
         self.buffer = deque(maxlen=self.capacity)
 
     def push(self, transitions: tuple):
-        """ 存储transition到经验回放中
+     
 
             :param transitions: (tuple) transition
         """
         self.buffer.append(transitions)
 
     def sample(self, batch_size: int = None, sequential: bool = True, with_log=True):
-        """ 采样transition, 每次采样 batch_size 个样本
+       
 
-            :param batch_size: (int) 批量大小
-            :param sequential: (bool) 是否顺序采样
-            :param with_log: (bool) 是否返回动作的对数概率
+            :param batch_size: (int) 
+            :param sequential: (bool) 
+            :param with_log: (bool) 
             :return: (tuple)
         """
-        # 如果批量大小大于经验回放的容量，则取经验回放的容量
+       
         if batch_size is None or batch_size > len(self.buffer):
             batch_size = len(self.buffer)
 
-        if sequential:  # 顺序采样 sequential sampling
+        if sequential:  #  sequential sampling
             rand = random.randint(0, len(self.buffer) - batch_size)
             batch = [self.buffer[i] for i in range(rand, rand + batch_size)]
-        else:  # 随机采样
+        else:  # random
             batch = random.sample(self.buffer, batch_size)
 
         a_logprob = None
@@ -68,21 +68,21 @@ class ReplayBuffer:
 
 
 class ReplayBufferDiscreteAction(ReplayBuffer):
-    """ 经验回放池, 用于存储transition, 然后随机采样transition用于训练 """
+    
 
     def __init__(self, capacity: int) -> None:
-        """ 初始化经验回放池
+        
 
             :param capacity: (int) 经验回放池的容量
         """
         super().__init__(capacity)
 
     def sample(self, batch_size: int = None, sequential: bool = True, with_log=True):
-        # 如果批量大小大于经验回放的容量，则取经验回放的容量
+     
         if batch_size is None or batch_size > len(self.buffer):
             batch_size = len(self.buffer)
 
-        if sequential:  # 顺序采样 sequential sampling
+        if sequential: 
             rand = random.randint(0, len(self.buffer) - batch_size)
             batch = [self.buffer[i] for i in range(rand, rand + batch_size)]
         else:  # 随机采样
@@ -109,13 +109,13 @@ class ReplayBufferDiscreteAction(ReplayBuffer):
 
 
 class Trajectory:
-    """ 用于存储一个完整的轨迹 """
+  
 
     def __init__(self) -> None:
         self.buffer = []
 
     def push(self, transitions: tuple):
-        """ 存储transition到经验回放中
+        
 
             :param transitions: (tuple)
         """
@@ -130,18 +130,18 @@ class HERReplayBuffer(ReplayBuffer):
 
     def __init__(self, capacity: int, k_future: int, env) -> None:
         super().__init__(capacity)
-        self.env = env  # 需要调用 compute_reward 函数
+        self.env = env  
         self.future_p = 1 - (1. / (1 + k_future))
 
     def push(self, trajectory: Trajectory):
-        """ 存储 trajectory 到经验回放中
+       
 
             :param trajectory: (Trajectory)
         """
         self.buffer.append(trajectory)
 
     def sample(self, batch_size: int = 256, sequential: bool = True, with_log=True, device='cpu'):
-        # 随机取 batch size 个回合索引和时间步索引
+    
         ep_indices = np.random.randint(0, len(self.buffer), batch_size)
         time_indices = np.random.randint(0, len(self.buffer[0]), batch_size)
         states = []
@@ -150,7 +150,7 @@ class HERReplayBuffer(ReplayBuffer):
         next_states = []
         next_achieved_goals = []
 
-        # 取出对应回合与时间步的 transitions
+     
         for episode, timestep in zip(ep_indices, time_indices):
             states.append(dc(self.buffer[episode].buffer[timestep][0]))
             actions.append(dc(self.buffer[episode].buffer[timestep][1]))
@@ -158,14 +158,14 @@ class HERReplayBuffer(ReplayBuffer):
             desired_goals.append(dc(self.buffer[episode].buffer[timestep][5]))
             next_achieved_goals.append(dc(self.buffer[episode].buffer[timestep][6]))
 
-        # 将列表升维并转换成数组类型
+       
         states = np.vstack(states)
         actions = np.vstack(actions)
         desired_goals = np.vstack(desired_goals)
         next_achieved_goals = np.vstack(next_achieved_goals)
         next_states = np.vstack(next_states)
 
-        # 根据 future k 概率随机选择要在批量中替换的索引
+      
         her_indices = np.where(np.random.uniform(size=batch_size) < self.future_p)
         future_offset = np.random.uniform(size=batch_size) * (len(self.buffer[0]) - time_indices)
         future_offset = future_offset.astype(int)
