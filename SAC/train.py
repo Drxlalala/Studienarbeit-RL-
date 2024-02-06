@@ -35,7 +35,7 @@ class Config:
         parser.add_argument("--alpha_lr", type=float, default=3e-4, help="Learning rate of alpha")
         parser.add_argument("--gamma", type=float, default=0.99, help="Discount factor")
         parser.add_argument("--tau", type=float, default=0.005, help="Softly update the target network")
-        parser.add_argument("--k_epochs", type=int, default=10, help="更新策略网络的次数")
+        parser.add_argument("--k_epochs", type=int, default=10, help="the time for update")
         parser.add_argument("--use_state_norm", type=bool, default=False, help="Trick 2:state normalization")
 
         return parser.parse_args()
@@ -50,33 +50,33 @@ class SACModel(ModelBase):
             self.state_norm = Normalization(shape=self.args.n_states)  # Trick 2:state normalization
 
     def train(self):
-        """ 训练 """
-        print("开始训练！")
+        """ start the training """
+        print("start the training！")
 
         total_steps = 0
         evaluate_num = 0
         sample_count = 0
-        evaluate_rewards = []  # 记录每回合的奖励
+        evaluate_rewards = []  
 
         # Tensorboard config
         log_dir = os.path.join(log_path, f'./runs/{self.model_name}')
         writer = SummaryWriter(log_dir=log_dir)
 
         while total_steps < self.args.max_train_steps:
-            s, _ = self.env.reset(seed=self.args.seed)  # 重置环境，返回初始状态
+            s, _ = self.env.reset(seed=self.args.seed)  
             ep_step = 0
             while True:
                 ep_step += 1
                 sample_count += 1
-                a = self.agent.sample_action(s)  # 选择动作
-                s_, r, terminated, truncated, _ = self.env.step(a)  # 更新环境，返回transition
+                a = self.agent.sample_action(s)  
+                s_, r, terminated, truncated, _ = self.env.step(a) 
 
                 if ep_step == self.args.max_episode_steps:
                     truncated = True
 
-                # 保存transition
+               
                 self.agent.memory.push((s, a, s_, r, terminated, truncated))
-                s = s_  # 更新下一个状态
+                s = s_  
                 total_steps += 1
 
                 # update policy every steps
@@ -98,19 +98,19 @@ class SACModel(ModelBase):
                 if terminated or truncated:
                     break
 
-        print("完成训练！")
+        print("the training is finish！")
         self.env.close()
 
 
 def make_env(args):
-    """ 配置智能体和环境 """
-    env = gym.make(args.env_name)  # 创建环境
+    """ set the Env and Model """
+    env = gym.make(args.env_name)  
     state_dim = env.observation_space.shape[0]
     action_dim = env.action_space.shape[0]
     max_action = env.action_space.high[0]
     print(f"state dim:{state_dim}, action dim:{action_dim}, max action:{max_action}")
 
-    # 更新n_states, max_action和n_actions到cfg参数中
+    
     setattr(args, 'state_dim', state_dim)
     setattr(args, 'action_dim', action_dim)
     setattr(args, 'max_action', max_action)
