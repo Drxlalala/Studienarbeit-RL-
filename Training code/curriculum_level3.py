@@ -15,7 +15,7 @@ import mujoco.viewer
 import numpy as np
 import torch as th
 import os
-import Interation
+
 
 
 class UnderwaterFetchEnv(gym.Wrapper):
