@@ -77,7 +77,7 @@ class Train_Type:
       loaded_model.set_env(DummyVecEnv([lambda: gym.make('normal_env') for _ in range(8)]))
 
 
-      loaded_model.learn(5000, callback=eval_callback)
+      loaded_model.learn(50000, callback=eval_callback)
 
 
       loaded_model.save('save/SAC.model_curriculum')
@@ -110,7 +110,7 @@ class Train_Type:
 
       loaded_model.set_env(DummyVecEnv([lambda: gym.make('normal_env') for _ in range(8)]))
 
-      loaded_model.learn(5000, callback=eval_callback)
+      loaded_model.learn(50000, callback=eval_callback)
 
       loaded_model.save('save/DDPG.model_curriculum')
 
