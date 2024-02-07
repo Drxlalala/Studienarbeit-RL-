@@ -78,7 +78,7 @@ class Train_Type:
       loaded_model.set_env(DummyVecEnv([lambda: gym.make('normal_env') for _ in range(8)]))
 
 
-      loaded_model.learn(50000, callback=eval_callback)
+      loaded_model.learn(5000, callback=eval_callback)
 
 
       loaded_model.save('save/SAC.model_curriculum')
@@ -115,7 +115,7 @@ class Train_Type:
 
       loaded_model.set_env(DummyVecEnv([lambda: gym.make('normal_env') for _ in range(8)]))
 
-      loaded_model.learn(50000, callback=eval_callback)
+      loaded_model.learn(5000, callback=eval_callback)
 
       loaded_model.save('save/DDPG.model_curriculum')
 
@@ -163,7 +163,7 @@ if Train:
       if not already_trained:
          model = DDPG( policy='MultiInputPolicy', env=make_vec_env(normal_env, n_envs=8), replay_buffer_class=HerReplayBuffer, learning_rate=1e-3, buffer_size=10_0000,learning_starts=100, batch_size=512, tau=5e-3, gamma=0.9, train_freq=(1, 'step'), verbose=1, tensorboard_log=log_dir)
          model = SAC( policy='MultiInputPolicy', env=make_vec_env(normal_env, n_envs=8), replay_buffer_class=HerReplayBuffer, learning_rate=1e-3, buffer_size=10_0000, learning_starts=100, batch_size=256, tau=5e-3, gamma=0.9, train_freq=(1, 'step'), verbose=1, tensorboard_log=log_dir)
-         model.learn(50000, progress_bar=True)
+         model.learn(5000, progress_bar=True)
 
          model.save('save/DDPG.model_curriculum')
          model.save_replay_buffer('save/DDPG.ReplayBuffer_curriculum')
