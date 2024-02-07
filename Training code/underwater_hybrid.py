@@ -113,7 +113,7 @@ class Train_Type:
 
       loaded_model.policy.load_state_dict(mean_params, strict=False)
 
-      loaded_model.learn(5000, callback=eval_callback)
+      loaded_model.learn(50000, callback=eval_callback)
 
 
       loaded_model.save('underwater_save/SAC.FetchPickAndPlace_Underwater_hybrid')
@@ -149,7 +149,7 @@ class Train_Type:
 
       loaded_model.set_env(vec_env)
 
-      loaded_model.learn(5000, callback=eval_callback)
+      loaded_model.learn(50000, callback=eval_callback)
 
 
       loaded_model.save('underwater_save/DDPG.FetchPickAndPlace_Underwater_hybrid')
@@ -205,7 +205,7 @@ if Train:
          vec_env = DummyVecEnv([lambda: underwater_env])
       
          model = DDPG( policy='MultiInputPolicy', env=make_vec_env(env_id, n_envs=8),learning_rate=1e-3, buffer_size=10_0000, learning_starts=100, batch_size=256, tau=5e-3, gamma=0.9, train_freq=(1, 'step'), verbose=1, tensorboard_log=log_dir)
-         model.learn(5000, callback=eval_callback)
+         model.learn(50000, callback=eval_callback)
          model.save('underwater_save/DDPG.FetchPickAndPlace_Underwater_hybrid')
          model.save_replay_buffer('underwater_save/DDPG.ReplayBuffer_Underwater_hybrid')
 
